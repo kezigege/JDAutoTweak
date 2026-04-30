@@ -1,0 +1,9 @@
+Package: com.jdauto.tweak
+Name: JD自动化
+Version: 1.0.0
+Architecture: iphoneos-arm64
+Description: 京东注册自动化插件（步骤27~31），含悬浮窗控制界面
+Maintainer: JDAutoTweak
+Author: JDAutoTweak
+Section: Utilities
+Depends: mobilesubstrate

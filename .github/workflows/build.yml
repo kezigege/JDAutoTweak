@@ -1,0 +1,45 @@
+name: Build JDAutoTweak .deb
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:   # 允许手动触发
+
+jobs:
+  build:
+    runs-on: macos-13   # 使用 macOS 编译 iOS arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Theos
+        uses: actions/checkout@v4
+        with:
+          repository: theos/theos
+          path: theos
+          submodules: recursive
+
+      - name: Install Theos dependencies
+        run: |
+          brew install ldid xz
+
+      - name: Download iOS 16 SDK
+        run: |
+          mkdir -p theos/sdks
+          curl -L "https://github.com/theos/sdks/releases/download/ios-16.5/iPhoneOS16.5.sdk.tar.xz" \
+            -o /tmp/sdk.tar.xz
+          tar -xJf /tmp/sdk.tar.xz -C theos/sdks/
+
+      - name: Build
+        env:
+          THEOS: ${{ github.workspace }}/theos
+        run: |
+          make package FINALPACKAGE=1
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JDAutoTweak-deb
+          path: packages/*.deb
+          retention-days: 30

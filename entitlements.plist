@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 允许以 root 权限运行（越狱环境） -->
+    <key>platform-application</key>
+    <true/>
+    <!-- 允许打开其他 App -->
+    <key>com.apple.private.LSApplicationWorkspace.openApplicationWithBundleID</key>
+    <true/>
+    <!-- 允许在后台运行 -->
+    <key>com.apple.private.backgroundtaskmanagement.task</key>
+    <true/>
+    <!-- 允许访问所有 UIWindow（悬浮窗跨 App 显示） -->
+    <key>com.apple.private.allow-explicit-graphics-priority</key>
+    <true/>
+    <!-- 允许 HTTP 任意请求 -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+</dict>
+</plist>
