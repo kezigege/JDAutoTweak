@@ -1,0 +1,9 @@
+#!/bin/bash
+# 安装后刷新桌面图标缓存
+if [ -x /usr/bin/uicache ]; then
+    /usr/bin/uicache -a
+elif [ -x /usr/local/bin/uicache ]; then
+    /usr/local/bin/uicache -a
+fi
+# 重启 SpringBoard（确保图标显示）
+killall -9 SpringBoard 2>/dev/null || true
