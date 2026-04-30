@@ -18,5 +18,7 @@ JDAutoTweak_FRAMEWORKS = UIKit Foundation
 JDAutoTweak_PRIVATE_FRAMEWORKS = AppSupport
 JDAutoTweak_CODESIGN_FLAGS = -Sentitlements.plist
 JDAutoTweak_INSTALL_PATH = /Applications
+JDAutoTweak_CFLAGS = -fobjc-arc
+JDAutoTweak_OBJCFLAGS = -fobjc-arc
 
 include $(THEOS)/makefiles/application.mk

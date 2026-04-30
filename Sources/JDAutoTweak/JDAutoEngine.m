@@ -394,17 +394,22 @@ static NSString *const kJDRegURL = @"https://www.jdl.com/hk/e/regPage?source=gan
     return nil;
 }
 
-// 请求接码API一次，返回原始字符串
+// 请求接码API一次，返回原始字符串（使用 NSURLSession 同步方式）
 - (NSString *)fetchAPIOnce {
     if (!self.apiURL.length) return nil;
     NSURL *url = [NSURL URLWithString:self.apiURL];
     if (!url) return nil;
     NSURLRequest *req = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0];
-    NSError *err = nil;
-    NSURLResponse *resp = nil;
-    NSData *data = [NSURLConnection sendSynchronousRequest:req returningResponse:&resp error:&err];
-    if (err || !data) return nil;
-    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    __block NSData *resultData = nil;
+    dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:req completionHandler:^(NSData *data, NSURLResponse *resp, NSError *err) {
+        if (!err && data) resultData = data;
+        dispatch_semaphore_signal(sem);
+    }];
+    [task resume];
+    dispatch_semaphore_wait(sem, dispatch_time(DISPATCH_TIME_NOW, 6 * NSEC_PER_SEC));
+    if (!resultData) return nil;
+    return [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
 }
 
 // 从字符串中提取4~8位纯数字验证码
@@ -543,7 +548,9 @@ static NSString *const kJDRegURL = @"https://www.jdl.com/hk/e/regPage?source=gan
                     center = [parent convertPoint:center toView:nil];
                     break;
                 }
-                [v sendActionsForControlEvents:UIControlEventTouchUpInside];
+                if ([v isKindOfClass:[UIControl class]]) {
+                    [(UIControl *)v sendActionsForControlEvents:UIControlEventTouchUpInside];
+                }
                 break;
             }
         }
