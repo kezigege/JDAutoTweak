@@ -7,25 +7,24 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup Theos
-        uses: theos/theos-action@v1
-        with:
-          theos-sdks: 'https://github.com/theos/sdks/releases/download/ios-16.5/iPhoneOS16.5.sdk.tar.xz'
+      - name: Prepare Theos
+        uses: randomblock1/theos-action@main
 
       - name: Build .deb
         run: |
+          rm -f packages/*
           make package FINALPACKAGE=1
 
       - name: Upload .deb artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: JDAutoTweak-deb
-          path: packages/*.deb
+          path: ${{ github.workspace }}/packages/*.deb
           retention-days: 30
           if-no-files-found: warn
