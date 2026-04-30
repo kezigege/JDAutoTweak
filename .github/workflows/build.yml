@@ -7,54 +7,20 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Theos
-        uses: actions/checkout@v4
+        uses: theos/theos-action@v1
         with:
-          repository: theos/theos
-          path: theos
-          submodules: recursive
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y fakeroot dpkg-dev curl xz-utils
-
-      - name: Install ldid
-        run: |
-          curl -L "https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid_linux_x86_64" \
-            -o /usr/local/bin/ldid
-          chmod +x /usr/local/bin/ldid
-
-      - name: Download iOS 16.5 SDK
-        run: |
-          mkdir -p theos/sdks
-          curl -L "https://github.com/theos/sdks/releases/download/ios-16.5/iPhoneOS16.5.sdk.tar.xz" \
-            -o /tmp/sdk.tar.xz
-          tar -xJf /tmp/sdk.tar.xz -C theos/sdks/
-
-      - name: Download iOS toolchain (clang for arm64)
-        run: |
-          mkdir -p theos/toolchain/linux/iphone
-          curl -L "https://github.com/kabiroberai/swift-toolchain-linux/releases/download/v2.3.0/ios-arm64-linux.tar.xz" \
-            -o /tmp/toolchain.tar.xz || true
-          # Fallback: use theos default toolchain
-          ls theos/toolchain/ || true
+          theos-sdks: 'https://github.com/theos/sdks/releases/download/ios-16.5/iPhoneOS16.5.sdk.tar.xz'
 
       - name: Build .deb
-        env:
-          THEOS: ${{ github.workspace }}/theos
         run: |
-          export PATH="$THEOS/bin:$PATH"
-          make package FINALPACKAGE=1 2>&1
-
-      - name: List packages
-        run: ls -la packages/ || echo "No packages directory"
+          make package FINALPACKAGE=1
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
